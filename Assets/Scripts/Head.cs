@@ -34,6 +34,10 @@ public class Head : Worm
             GameManager.Instance.IsMoving = true;
         }
 
+        if (Input.GetKeyDown(KeyCode.Z)) 
+        {
+            SpawnTail();
+        }
 
         if (GameManager.Instance.IsMoving) 
         {
@@ -95,16 +99,7 @@ public class Head : Worm
         {
             updateWormPos();
             GameManager.Instance.OnFoodRepos.Invoke();
-            GameManager.Instance.WormPos.Add(newTailPos());
-            Tail newTail = Instantiate(WormTailPrefab, newTailPos(), Quaternion.identity, GameManager.Instance.Map);
-            WormTails.Add(newTail);
-            newTail.name = $"WormTail ({WormTails.Count - 1})";
-            if ((WormTails.Count == 0))
-                newTail.SetParent(this);
-            else
-                newTail.SetParent(WormTails[WormTails.Count - 2]);
-
-            WormTails[WormTails.Count - 2].SetTailChild(newTail);
+            SpawnTail();
 
         }
         else if (other.tag == "Tail") 
@@ -112,6 +107,22 @@ public class Head : Worm
             GameManager.Instance.IsMoving = false;
             GameManager.Instance.OnGameOver.Invoke();
         }
+
+
+    }
+
+    private void SpawnTail() 
+    {
+        GameManager.Instance.WormPos.Add(newTailPos());
+        Tail newTail = Instantiate(WormTailPrefab, newTailPos(), Quaternion.identity, GameManager.Instance.Map);
+        WormTails.Add(newTail);
+        newTail.name = $"WormTail ({WormTails.Count - 1})";
+        if ((WormTails.Count == 0))
+            newTail.SetParent(this);
+        else
+            newTail.SetParent(WormTails[WormTails.Count - 2]);
+
+        WormTails[WormTails.Count - 2].SetTailChild(newTail);
 
         Vector3 newTailPos()
         {
@@ -129,6 +140,7 @@ public class Head : Worm
                     return Vector3.zero;
             }
         }
+
     }
 
 }

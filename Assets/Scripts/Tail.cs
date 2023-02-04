@@ -8,18 +8,16 @@ public class Tail : Worm
     [SerializeField] private GameObject Child;
 
 
-    public override void Start()
+    private void OnEnable()
     {
-        base.Start();
         InvokeRepeating("Move", 0, GameManager.Instance.GameSpeed);
 
     }
 
-    private void Move()
+    protected override void Move()
     {
         if (GameManager.Instance.IsMoving)
         {
-           //PrevPos = Parent.PrevPos;
             PrevPos =  Parent.transform.position;
             this.transform.position = PrevPos;
         }
