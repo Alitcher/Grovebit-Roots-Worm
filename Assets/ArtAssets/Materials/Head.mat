@@ -77,15 +77,15 @@ Material:
     - _Offset2: 0
     - _Outline: 1
     - _Parallax: 0.02
-    - _RampSmooth: 0.1
-    - _RampThreshold: 0.5
+    - _RampSmooth: 0.001
+    - _RampThreshold: 1
     - _RimMax: 1
     - _RimMin: 0.5
     - _SketchHalftoneMax: 1
     - _SketchHalftoneMin: 0.2
     - _Smoothness: 0.2
     - _SmoothnessTextureChannel: 0
-    - _SpecSmooth: 0.05
+    - _SpecSmooth: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _TexLod: 5
