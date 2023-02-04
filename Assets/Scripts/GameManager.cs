@@ -9,14 +9,16 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     [SerializeField] private int[] MapBoarder;
     [SerializeField] private GameObject FoodPrefab;
     [SerializeField] private List<GameObject> ObsPrefab;
+    public int SpeedDivisor => OccupiedPos.Count;
 
-    public List<Vector3> WormPos = new List<Vector3>();
+    public List<Vector3> OccupiedPos = new List<Vector3>();
     public int Level = 0;
-    public float GameSpeed;
+    public float gameSpeed;
+    public float GameSpeed => gameSpeed ;
     public bool IsMoving;
     public bool IsGameover;
     public Vector3 NextFoodPosition;
-    public Transform Map;
+    public Transform Map, Worm;
     // Start is called before the first frame update
 
     public Action OnFoodRepos;
@@ -28,6 +30,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
         SpawnFood();
         OnFoodRepos = SetPosFood;
         OnGameOver += SetGameOver;
+
+        SoundManager.Instance.Play2("BGM");
     }
 
     // Update is called once per frame
@@ -44,15 +48,19 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     {
         if (Food == null)
         {
-            Food = Instantiate(FoodPrefab, NextFoodPosition, Quaternion.identity);
+            Food = Instantiate(FoodPrefab, NextFoodPosition, Quaternion.identity, Map);
             SetFoodPos();
         }
     }
 
     public void SetPosFood()
     {
-        Food.transform.position = NextFoodPosition;
+        SoundManager.Instance.Play2("eat");
+
         SetFoodPos();
+
+
+        Food.transform.position = NextFoodPosition;
 
     }
 
@@ -60,19 +68,23 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     {
         NextFoodPosition = new Vector3(UnityEngine.Random.Range(MapBoarder[2], MapBoarder[3]), UnityEngine.Random.Range(MapBoarder[1], MapBoarder[0]), 0);
 
-        for (int i = 0; i < WormPos.Count; i++)
+        for (int i = 0; i < OccupiedPos.Count; i++)
         {
 
-            if (NextFoodPosition == WormPos[i])
+            if (NextFoodPosition != OccupiedPos[i])
             {
-                NextFoodPosition = new Vector3(UnityEngine.Random.Range(MapBoarder[2], MapBoarder[3]), UnityEngine.Random.Range(MapBoarder[1], MapBoarder[0]), 0);
-
+                continue;
             }
+            NextFoodPosition = new Vector3(UnityEngine.Random.Range(MapBoarder[2], MapBoarder[3]), UnityEngine.Random.Range(MapBoarder[1], MapBoarder[0]), 0);
+
         }
+
     }
 
     public void SetGameOver()
     {
         IsGameover = true;
+        SoundManager.Instance.Stop("BGM");
+        SoundManager.Instance.Play2("over");
     }
 }

@@ -5,12 +5,12 @@ using UnityEngine;
 public class Head : Worm
 {
 
-
     [SerializeField] private Tail WormTailPrefab;
 
 
     [SerializeField] private GameObject WormHead;
     [SerializeField] private List<Tail> WormTails;
+    public ParticleSystem FertEffect;
 
 
     private int minSize = 5;
@@ -19,11 +19,13 @@ public class Head : Worm
     {
         base.Start();
         InvokeRepeating("Move", 0, GameManager.Instance.GameSpeed);
-        GameManager.Instance.WormPos.Add(WormHead.transform.position);
+        GameManager.Instance.OccupiedPos.Add(WormHead.transform.position);
         foreach (var item in WormTails)
         {
-            GameManager.Instance.WormPos.Add(item.transform.position);
+            GameManager.Instance.OccupiedPos.Add(item.transform.position);
         }
+
+        EnableFX();
     }
 
     // Update is called once per frame
@@ -34,32 +36,27 @@ public class Head : Worm
             GameManager.Instance.IsMoving = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Z)) 
-        {
-            SpawnTail();
-        }
+        //if (Input.GetKeyDown(KeyCode.Z)) 
+        //{
+        //    SpawnTail();
+        //}
 
         if (GameManager.Instance.IsMoving) 
         {
             if (Input.GetKeyDown(KeyCode.W) && dir != Direction.Down)
             {
-                PrevDir = dir;
-
                 dir = Direction.Up;
             }
             if (Input.GetKeyDown(KeyCode.S) && dir != Direction.Up)
             {
-                PrevDir = dir;
                 dir = Direction.Down;
             }
             if (Input.GetKeyDown(KeyCode.A) && dir != Direction.Right)
             {
-                PrevDir = dir;
                 dir = Direction.Left;
             }
             if (Input.GetKeyDown(KeyCode.D) && dir != Direction.Left)
             {
-                PrevDir = dir;
                 dir = Direction.Right;
             }
         }
@@ -68,13 +65,13 @@ public class Head : Worm
 
     private void updateWormPos() 
     {
-        for (int i = 0; i < GameManager.Instance.WormPos.Count; i++)
+        for (int i = 0; i < GameManager.Instance.OccupiedPos.Count; i++)
         {
             if (i == 0)
-                GameManager.Instance.WormPos[i] = WormHead.transform.position;
+                GameManager.Instance.OccupiedPos[i] = WormHead.transform.position;
             else 
             {
-                GameManager.Instance.WormPos[i] = WormTails[i-1].transform.position;
+                GameManager.Instance.OccupiedPos[i] = WormTails[i-1].transform.position;
             }
         }
     }
@@ -113,8 +110,8 @@ public class Head : Worm
 
     private void SpawnTail() 
     {
-        GameManager.Instance.WormPos.Add(newTailPos());
-        Tail newTail = Instantiate(WormTailPrefab, newTailPos(), Quaternion.identity, GameManager.Instance.Map);
+        GameManager.Instance.OccupiedPos.Add(newTailPos());
+        Tail newTail = Instantiate(WormTailPrefab, newTailPos(), Quaternion.identity, GameManager.Instance.Worm);
         WormTails.Add(newTail);
         newTail.name = $"WormTail ({WormTails.Count - 1})";
         if ((WormTails.Count == 0))
@@ -123,6 +120,7 @@ public class Head : Worm
             newTail.SetParent(WormTails[WormTails.Count - 2]);
 
         WormTails[WormTails.Count - 2].SetTailChild(newTail);
+        EnableFX();
 
         Vector3 newTailPos()
         {
@@ -140,7 +138,16 @@ public class Head : Worm
                     return Vector3.zero;
             }
         }
-
     }
 
+    private void EnableFX() 
+    {
+        FertEffect.gameObject.SetActive(true);
+        FertEffect.transform.position = WormTails[WormTails.Count - 1].transform.position;
+        Invoke("DisableFX", 5f);
+    }
+    private void DisableFX() 
+    {
+        FertEffect.gameObject.SetActive(false);
+    }
 }

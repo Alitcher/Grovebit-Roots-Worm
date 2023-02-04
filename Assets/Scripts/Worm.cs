@@ -5,13 +5,14 @@ using UnityEngine;
 public class Worm : MonoBehaviour
 {
     public static Vector3[] HeadDirection = new Vector3[4] { new Vector3(0, 0, 0), new Vector3(0, 0, 180), new Vector3(0, 0, 90), new Vector3(0, 0, 270) };
-
+    public readonly int Goal = 30;
     public static Direction dir = Direction.Up;
     public static Direction PrevDir;
     public Vector3 PrevPos;
 
     public virtual void Start()
     {
+       // dir = Direction.Up;
     }
 
     protected virtual void Move()
